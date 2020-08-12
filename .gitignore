@@ -132,5 +132,6 @@ dmypy.json
 /output
 
 # input files
-/input
 !/input/example*
+
+!.empty
