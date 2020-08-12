@@ -89,9 +89,14 @@ class Filesystem:
 			f.write( str(key) + "\n" )
 		f.close()
 		
-	def clean(self):
+	def clean(self, dirs=[]):
 		logging.info("Cleanup data")
-		os.system( "git stash" )
+		for d in dirs:
+			if path.exists(d):
+				for dirpath, dirnames, filenames in os.walk(d):
+					for f in filenames:
+						if not str(f).startswith('.'):
+							os.remove( d + f )
 
 class Main:
 
@@ -113,8 +118,8 @@ class Main:
 		self.inputDir = inputDir
 
 	def start(self):
-		self.filesystem.clean( )
-			
+		self.filesystem.clean( [self.outputDir+"/"] )
+
 		if self.filesystem.check( self.inputDir, self.outputDir, self.inputFile, self.usedKeysFile ):
 			self.keys = self.filesystem.readKeys( self.inputDir + "/" + self.usedKeysFile )
 			self.n_userdata, self.userdata = self.filesystem.readUsers( self.inputDir + "/" + self.inputFile )
@@ -125,6 +130,13 @@ class Main:
 			self.filesystem.writeUsersJson( self.userdata, self.outputDir + "/users.json" )
 			self.filesystem.writeKeys(keys, self.outputDir + "/keys.txt")
 			self.formattedOutput()
+			logging.info( "done." )
+			
+			# ask for cleanup
+			while self.ask( "Do you downloaded output?", ['y', 'n'] ) != "y":
+				print( "\n\n\t\t>>>> DOWNLOAD OUTPUT NOW <<<<\n\n\n" )
+			self.filesystem.clean( [self.inputDir+"/", self.outputDir+"/"] )
+				
 				
 	def produceKeys(self, amount_of_keys, keys = set(), _randint=np.random.randint ):
 		logging.info("Generating keys, this may take a while, ...")		
