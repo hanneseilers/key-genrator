@@ -129,9 +129,10 @@ dmypy.json
 .pyre/
 
 # output directory
-/output
+/output/*
 
 # input files
+/input/*
 !/input/example*
 
 !.empty
