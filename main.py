@@ -88,6 +88,10 @@ class Filesystem:
 		for key in keys:
 			f.write( str(key) + "\n" )
 		f.close()
+		
+	def clean(self):
+		logging.info("Cleanup data")
+		os.system( "git stash" )
 
 class Main:
 
@@ -108,7 +112,9 @@ class Main:
 		self.outputDir = outputDir
 		self.inputDir = inputDir
 
-	def start(self):		
+	def start(self):
+		self.filesystem.clean( )
+			
 		if self.filesystem.check( self.inputDir, self.outputDir, self.inputFile, self.usedKeysFile ):
 			self.keys = self.filesystem.readKeys( self.inputDir + "/" + self.usedKeysFile )
 			self.n_userdata, self.userdata = self.filesystem.readUsers( self.inputDir + "/" + self.inputFile )
